@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Tasks</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        h2 { margin-top: 40px; }
+        .block { padding: 10px; border: 1px solid #ccc; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Лабораторная 8</h1>
+
+<!--  ЗАДАЧА 1  -->
+<div class="block">
+    <h2>Задача 1</h2>
+
+    <h3>counter(n)</h3>
+    <div id="counter-output"></div>
+    <button onclick="counter(5)">Запустить counter(5)</button>
+
+    <hr>
+
+    <h3>createCounter(n)</h3>
+    <div id="create-counter-output"></div>
+    <button onclick="myCounter.start()">start()</button>
+    <button onclick="myCounter.pause()">pause()</button>
+    <button onclick="myCounter.stop()">stop()</button>
+</div>
+
+
+<!--ЗАДАЧА 2-->
+<div class="block">
+    <h2>Задача 2</h2>
+
+    <h3>Счётчик через delay()</h3>
+    <div id="promise-counter"></div>
+    <button onclick="promiseCounter(5)">Запустить promiseCounter(5)</button>
+
+    <hr>
+
+    <h3>Первый репозиторий GitHub</h3>
+    <input id="gh-user" placeholder="GitHub username">
+    <button onclick="loadFirstRepo()">Получить первый репозиторий</button>
+    <div id="repo-output"></div>
+</div>
+
+
+<!--ЗАДАЧА 3-->
+<div class="block">
+    <h2>Задача 3</h2>
+
+    <button onclick="getGithubUser()">Запросить пользователя</button>
+    <div id="task3-output"></div>
+</div>
+
+<script src="lab 8_1.js"></script>
+<script src="lab 8_2.js"></script>
+<script src="lab 8_3.js"></script>
+
+<script>
+    const myCounter = createCounter(5);
+</script>
+
+</body>
+</html>
