@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>TravelWorld</title>
+  
+  <!-- Подключение Leaflet для карты -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      color: #222;
+      background: #f5f5f5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ---------- Шапка и навигация ---------- */
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(6px);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 20px;
+      color: #0b6efb;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 18px;
+      font-size: 14px;
+    }
+
+    nav a {
+      position: relative;
+      padding: 4px 0;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 2px;
+      background: #0b6efb;
+      transition: width 0.25s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    /* ---------- Общие стили секций ---------- */
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 24px 60px;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin-bottom: 24px;
+    }
+
+    p {
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    /* ---------- Кнопки и hover-анимации ---------- */
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #0b6efb;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 8px 18px rgba(11, 110, 251, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(11, 110, 251, 0.45);
+      background: #0956c4;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ---------- Hero с background-image ---------- */
+
+    #hero {
+      position: relative;
+      color: #fff;
+      justify-content: center;
+      text-align: left;
+      background-image: linear-gradient(
+          rgba(0, 0, 0, 0.45),
+          rgba(0, 0, 0, 0.55)
+        ),
+        url("https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&w=1600");
+      background-size: cover;
+      background-position: center;
+    }
+
+    #hero .section-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 700px;
+    }
+
+    #hero h1 {
+      font-size: 40px;
+      line-height: 1.2;
+    }
+
+    #hero p {
+      font-size: 16px;
+      max-width: 520px;
+    }
+
+    /* ---------- О нас ---------- */
+
+    #about .section-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 40px;
+      align-items: center;
+    }
+
+    #about img {
+      border-radius: 18px;
+      height: 100%;
+      object-fit: cover;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    #about img:hover {
+      transform: scale(1.03);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    /* ---------- Лучшее предложение ---------- */
+
+    #offers .offer-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .offer-image {
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .offer-image:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    .offer-meta {
+      font-size: 14px;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .price {
+      font-weight: 700;
+      font-size: 18px;
+      margin-top: 8px;
+      color: #0b6efb;
+    }
+
+    /* ---------- Популярные направления ---------- */
+
+    #destinations .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .destination-card img {
+      border-radius: 14px;
+      margin-bottom: 10px;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .destination-card h3 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .destination-card span {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* ---------- Наши туры ---------- */
+
+    #tours .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .tour-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .tour-card p {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .tour-card .price {
+      margin-bottom: 12px;
+    }
+
+    /* ---------- Отзывы ---------- */
+
+    #reviews .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .review-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0b6efb, #ff7a59);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .review-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .review-text {
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* ---------- Наши моменты (карусель) ---------- */
+
+    #moments .carousel-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      height: 360px;
+      position: relative;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-controls {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      pointer-events: none;
+    }
+
+    .carousel-btn {
+      pointer-events: auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: scale(1.05);
+    }
+
+    /* ---------- FAQ ---------- */
+
+    #faq details {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #faq details:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    #faq summary {
+      font-weight: 600;
+      list-style: none;
+    }
+
+    #faq summary::-webkit-details-marker {
+      display: none;
+    }
+
+    #faq p {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* ---------- Контакты ---------- */
+
+    #contacts .section-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .contacts-list {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .contacts-list strong {
+      display: inline-block;
+      width: 80px;
+    }
+
+    .map-placeholder {
+      border-radius: 18px;
+      background-image: linear-gradient(
+          rgba(0, 0, 0, 0.25),
+          rgba(0, 0, 0, 0.45)
+        ),
+        url("https://images.pexels.com/photos/4085034/pexels-photo-4085034.jpeg?auto=compress&cs=tinysrgb&w=1600");
+      background-size: cover;
+      background-position: center;
+      height: 320px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .socials {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .social-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #0b6efb;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .social-pill:hover {
+      background: #0956c4;
+      transform: translateY(-1px);
+    }
+
+    /* ---------- НОВАЯ СЕКЦИЯ: Интерактивная карта ---------- */
+
+    #map-section {
+      background: #fff;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 120px;
+    }
+
+    #map-section h2 {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    #map-section > .section-inner > p {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 24px;
+      color: #555;
+    }
+
+    .continent-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .continent-btn {
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 2px solid #0b6efb;
+      background: #fff;
+      color: #0b6efb;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .continent-btn:hover,
+    .continent-btn.active {
+      background: #0b6efb;
+      color: #fff;
+    }
+
+    .continent-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #map {
+      width: 100%;
+      height: 500px;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      z-index: 1;
+    }
+
+    .map-loading {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      padding: 20px;
+    }
+
+    /* ---------- Адаптив ---------- */
+
+    @media (max-width: 900px) {
+      #about .section-inner,
+      #offers .offer-wrapper,
+      #contacts .section-inner {
+        grid-template-columns: 1fr;
+      }
+
+      #hero h1 {
+        font-size: 32px;
+      }
+
+      section {
+        padding: 90px 16px 50px;
+      }
+
+      .nav-container {
+        padding-inline: 16px;
+      }
+
+      nav ul {
+        gap: 10px;
+        font-size: 13px;
+      }
+
+      #map {
+        height: 400px;
+      }
+
+      .continent-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .continent-btn {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Навигация -->
+  <header>
+    <div class="nav-container">
+      <div class="logo">TravelWorld</div>
+      <nav>
+        <ul>
+          <li><a href="#about">О нас</a></li>
+          <li><a href="#offers">Лучшие предложения</a></li>
+          <li><a href="#destinations">Направления</a></li>
+          <li><a href="#tours">Наши туры</a></li>
+          <li><a href="#reviews">Отзывы</a></li>
+          <li><a href="#moments">Наши моменты</a></li>
+          <li><a href="#map-section">Карта мира</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero с background -->
+  <section id="hero">
+    <div class="section-inner">
+      <h1>Откройте мир с TravelWorld</h1>
+      <p>
+        Мы создаём путешествия, которые запоминаются на всю жизнь: от уютных европейских улочек до
+        шумных мегаполисов и экзотических пляжей.
+      </p>
+      <button class="btn" onclick="document.getElementById('offers').scrollIntoView({behavior:'smooth'})">
+        Выбрать тур
+      </button>
+    </div>
+  </section>
+
+  <!-- О нашем агентстве -->
+  <section id="about">
+    <div class="section-inner">
+      <div>
+        <h2>О нашем агентстве</h2>
+        <p>
+          TravelWorld — это команда профессионалов, влюблённых в путешествия. Мы тщательно подбираем
+          маршруты, отели и экскурсии, чтобы каждое ваше путешествие было комфортным, безопасным и
+          по‑настоящему вдохновляющим.
+        </p>
+        <p>
+          Мы работаем с проверенными партнёрами по всему миру и создаём как готовые туры, так и
+          индивидуальные программы под ваши интересы и бюджет.
+        </p>
+        <button class="btn">Связаться с нами</button>
+      </div>
+      <div>
+        <img
+          src="https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&w=1600"
+          alt="Европейские домики у канала"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Наши лучшие предложения -->
+  <section id="offers">
+    <div class="section-inner">
+      <h2>Наши лучшие предложения</h2>
+      <div class="offer-wrapper">
+        <div class="offer-image">
+          <img
+            src="https://images.pexels.com/photos/3408353/pexels-photo-3408353.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Эдинбург, Шотландия"
+          />
+        </div>
+        <div>
+          <h3>Эдинбург, Шотландия</h3>
+          <p>
+            Откройте для себя атмосферу старинных улиц, величественных замков и уютных пабов. Идеальное
+            направление для тех, кто любит историю, мистику и потрясающие виды.
+          </p>
+          <div class="offer-meta">7 дней / 6 ночей, перелёт и проживание включены</div>
+          <div class="price">от 1 200 €</div>
+          <button class="btn">Забронировать</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Популярные направления -->
+  <section id="destinations">
+  <div class="section-inner">
+    <h2>Популярные направления</h2>
+    <div class="cards-grid">
+
+      <div class="card destination-card">
+        <img src="https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg" alt="Будапешт">
+        <h3>Будапешт, Венгрия</h3><span>от 450 €</span>
+      </div>
+
+      <div class="card destination-card">
+        <img src="https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg" alt="Париж">
+        <h3>Париж, Франция</h3><span>от 700 €</span>
+      </div>
+
+      <div class="card destination-card">
+        <img src="https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg" alt="Нью-Йорк">
+        <h3>Нью‑Йорк, США</h3><span>от 900 €</span>
+      </div>
+
+      <div class="card destination-card">
+        <img src="https://images.pexels.com/photos/2082103/pexels-photo-2082103.jpeg" alt="Рим">
+        <h3>Рим, Италия</h3><span>от 520 €</span>
+      </div>
+
+      <div class="card destination-card">
+        <img src="https://images.pexels.com/photos/460376/pexels-photo-460376.jpeg" alt="Берлин">
+        <h3>Берлин, Германия</h3><span>от 480 €</span>
+      </div>
+
+      <div class="card destination-card">
+        <img src="https://images.pexels.com/photos/356844/pexels-photo-356844.jpeg" alt="Барселона">
+        <h3>Барселона, Испания</h3><span>от 650 €</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- Наши туры -->
+  <section id="tours">
+  <div class="section-inner">
+    <h2>Наши туры</h2>
+    <div class="cards-grid">
+
+      <div class="card tour-card">
+        <h3>Гранд тур по Европе</h3>
+        <p>10 городов, 5 стран и сотни впечатлений.</p>
+        <div class="price">от 1 800 €</div>
+        <button class="btn">Подробнее</button>
+      </div>
+
+      <div class="card tour-card">
+        <h3>Рио‑де‑Жанейро, Бразилия</h3>
+        <p>Карнавал, океан и знаменитая статуя Христа.</p>
+        <div class="price">от 1 500 €</div>
+        <button class="btn">Подробнее</button>
+      </div>
+
+      <div class="card tour-card">
+        <h3>Япония: традиции и современность</h3>
+        <p>От храмов Киото до неонового Токио.</p>
+        <div class="price">от 2 100 €</div>
+        <button class="btn">Подробнее</button>
+      </div>
+
+      <div class="card tour-card">
+        <h3>Сафари в Кении</h3>
+        <p>Дикая природа, саванны и уникальные впечатления.</p>
+        <div class="price">от 2 300 €</div>
+        <button class="btn">Подробнее</button>
+      </div>
+
+      <div class="card tour-card">
+        <h3>Исландия: огонь и лёд</h3>
+        <p>Гейзеры, водопады и северное сияние.</p>
+        <div class="price">от 2 800 €</div>
+        <button class="btn">Подробнее</button>
+      </div>
+
+      <div class="card tour-card">
+        <h3>Таиланд: пляжи и храмы</h3>
+        <p>Бирюзовое море, джунгли и буддийские святыни.</p>
+        <div class="price">от 1 200 €</div>
+        <button class="btn">Подробнее</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- Отзывы наших клиентов (исправлен синтаксис) -->
+  <section id="reviews">
+  <div class="section-inner">
+    <h2>Отзывы наших клиентов</h2>
+    <div class="cards-grid">
+
+      <div class="card review-card">
+        <div class="review-header"><div class="avatar">М</div><div class="review-name">Мария Иванова</div></div>
+        <div class="review-text">«Путешествие в Париж было прекрасно организовано.»</div>
+      </div>
+
+      <div class="card review-card">
+        <div class="review-header"><div class="avatar">А</div><div class="review-name">Алексей Петров</div></div>
+        <div class="review-text">«Особенно понравилась экскурсия в Праге.»</div>
+      </div>
+
+      <div class="card review-card">
+        <div class="review-header"><div class="avatar">Е</div><div class="review-name">Елена Смирнова</div></div>
+        <div class="review-text">«Помогли подобрать тур под наш бюджет.»</div>
+      </div>
+
+      <div class="card review-card">
+        <div class="review-header"><div class="avatar">Д</div><div class="review-name">Дмитрий Орлов</div></div>
+        <div class="review-text">«Лучшее путешествие в моей жизни. Спасибо команде!»</div>
+      </div>
+
+      <div class="card review-card">
+        <div class="review-header"><div class="avatar">С</div><div class="review-name">Светлана Кузнецова</div></div>
+        <div class="review-text">«Очень внимательные менеджеры, всё объяснили и помогли.»</div>
+      </div>
+
+      <div class="card review-card">
+        <div class="review-header"><div class="avatar">И</div><div class="review-name">Игорь Лебедев</div></div>
+        <div class="review-text">«Отличный сервис, буду рекомендовать друзьям.»</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- Наши моменты (карусель) -->
+  <section id="moments">
+    <div class="section-inner">
+      <h2>Наши моменты</h2>
+      <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide">
+            <img
+              src="https://images.pexels.com/photos/1430677/pexels-photo-1430677.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              alt="Момент 1"
+            />
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.pexels.com/photos/210307/pexels-photo-210307.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              alt="Момент 2"
+            />
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              alt="Момент 3"
+            />
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="prevBtn">&#10094;</button>
+          <button class="carousel-btn" id="nextBtn">&#10095;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🌍 НОВАЯ СЕКЦИЯ: Интерактивная карта мира -->
+  <section id="map-section">
+    <div class="section-inner">
+      <h2>Исследуйте мир</h2>
+      <p>Выберите континент, чтобы увидеть популярные направления и начать планировать своё путешествие</p>
+      
+      <div class="continent-buttons">
+        <button class="continent-btn" data-continent="Europe">🇪🇺 Европа</button>
+        <button class="continent-btn" data-continent="Asia">🌏 Азия</button>
+        <button class="continent-btn" data-continent="Africa">🌍 Африка</button>
+        <button class="continent-btn" data-continent="America">🌎 Америка</button>
+      </div>
+      
+      <div id="map"></div>
+      <div id="mapStatus" class="map-loading">Нажмите на кнопку континента, чтобы увидеть подробности</div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-inner">
+      <h2>Часто задаваемые вопросы</h2>
+      <details>
+        <summary>Какие документы нужны для поездки?</summary>
+        <p>
+          Всё зависит от направления. Обычно требуется загранпаспорт, иногда — виза и медицинская страховка.
+          Мы подскажем полный список документов для вашего тура.
+        </p>
+      </details>
+      <details>
+        <summary>Можно ли изменить даты путешествия?</summary>
+        <p>
+          В большинстве случаев даты можно изменить за определённое время до вылета. Условия зависят от
+          тарифа и авиакомпании.
+        </p>
+      </details>
+      <details>
+        <summary>Вы помогаете с оформлением визы?</summary>
+        <p>
+          Да, мы консультируем по визовым вопросам и помогаем подготовить пакет документов для подачи.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Контакты -->
+  <section id="contacts">
+    <div class="section-inner">
+      <div>
+        <h2>Наши контакты</h2>
+        <div class="contacts-list">
+          <p><strong>Адрес:</strong> ул. Путешествий, 10, Хельсинки</p>
+          <p><strong>Тел.:</strong> +358 123 456 789</p>
+          <p><strong>Email:</strong> info@travelworld.com</p>
+        </div>
+        <div class="socials">
+          <div class="social-pill">Instagram</div>
+          <div class="social-pill">Facebook</div>
+          <div class="social-pill">VK</div>
+        </div>
+      </div>
+      <div class="map-placeholder"></div>
+    </div>
+  </section>
+
+  <!-- Подключение Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script>
+    // ========== Карусель для "Наши моменты" ==========
+    const track = document.getElementById("carouselTrack");
+    const slides = Array.from(track.children);
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    let currentIndex = 0;
+
+    function updateCarousel() {
+      if (slides.length === 0) return;
+      const width = slides[0].getBoundingClientRect().width;
+      track.style.transform = `translateX(-${currentIndex * width}px)`;
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % slides.length;
+      updateCarousel();
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+      updateCarousel();
+    }
+
+    nextBtn?.addEventListener("click", showNext);
+    prevBtn?.addEventListener("click", showPrev);
+    window.addEventListener("resize", updateCarousel);
+    setInterval(showNext, 5000);
+
+    // ========== 🌍 ЛОГИКА ИНТЕРАКТИВНОЙ КАРТЫ ==========
+    
+    // Запасные координаты центров континентов (если API недоступен)
+    const fallbackCoords = {
+      Europe: [54.5260, 15.2551],
+      Asia: [34.0479, 100.6197],
+      Africa: [6.4281, 20.7907],
+      America: [37.0902, -95.7129]
+    };
+
+    // Радиусы окружностей для континентов (в метрах)
+    const continentRadius = {
+      Europe: 2000000,
+      Asia: 4000000,
+      Africa: 3000000,
+      America: 5000000
+    };
+
+    let map = null;
+    let currentCircle = null;
+    let mapInitialized = false;
+
+    // Инициализация карты
+    function initMap() {
+      if (mapInitialized) return;
+      
+      map = L.map('map').setView([20, 0], 2);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      
+      mapInitialized = true;
+      
+      // Небольшая задержка для корректного рендеринга
+      setTimeout(() => map.invalidateSize(), 100);
+    }
+
+    // Функция для получения координат через API и рисования окружности
+    function highlightContinent(continentName) {
+      const statusEl = document.getElementById('mapStatus');
+      statusEl.textContent = 'Загрузка данных...';
+      
+      // Деактивируем кнопки на время запроса
+      document.querySelectorAll('.continent-btn').forEach(btn => {
+        btn.disabled = true;
+      });
+
+      // Формируем URL для запроса к Nominatim API
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(continentName)}&format=json&limit=1`;
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data[0] && data[0].lat && data[0].lon) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            drawCircle(lat, lon, continentName);
+            statusEl.textContent = `📍 Центр ${getContinentName(continentName)}: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+          } else {
+            throw new Error('No coordinates found');
+          }
+        })
+        .catch(error => {
+          console.log('API недоступно, использую запасные координаты:', error);
+          const coords = fallbackCoords[continentName];
+          if (coords) {
+            drawCircle(coords[0], coords[1], continentName);
+            statusEl.textContent = `⚠️ Использованы запасные координаты для ${getContinentName(continentName)}`;
+          } else {
+            statusEl.textContent = '❌ Не удалось загрузить данные';
+          }
+        })
+        .finally(() => {
+          // Возвращаем активность кнопкам
+          document.querySelectorAll('.continent-btn').forEach(btn => {
+            btn.disabled = false;
+          });
+        });
+    }
+
+    // Рисование окружности на карте
+    function drawCircle(lat, lon, continentName) {
+      // Удаляем предыдущую окружность, если есть
+      if (currentCircle) {
+        map.removeLayer(currentCircle);
+      }
+
+      const radius = continentRadius[continentName] || 2000000;
+      
+      // Рисуем новую окружность
+      currentCircle = L.circle([lat, lon], {
+        color: '#0b6efb',
+        fillColor: '#0b6efb',
+        fillOpacity: 0.15,
+        radius: radius,
+        weight: 2
+      }).addTo(map);
+
+      // Центрируем карту на выбранном континенте
+      map.flyTo([lat, lon], continentName === 'America' ? 3 : 4, {
+        duration: 1.5
+      });
+
+      // Добавляем маркер в центр
+      L.marker([lat, lon])
+        .addTo(map)
+        .bindPopup(`<strong>${getContinentName(continentName)}</strong><br>Нажмите для поиска туров`)
+        .openPopup();
+    }
+
+    // Вспомогательная функция для красивых названий континентов
+    function getContinentName(key) {
+      const names = {
+        Europe: 'Европы',
+        Asia: 'Азии',
+        Africa: 'Африки',
+        America: 'Америки'
+      };
+      return names[key] || key;
+    }
+
+    // Обработчики кликов по кнопкам континентов
+    document.addEventListener('DOMContentLoaded', () => {
+      const continentButtons = document.querySelectorAll('.continent-btn');
+      
+      continentButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Убираем активный класс у всех кнопок
+          continentButtons.forEach(btn => btn.classList.remove('active'));
+          // Добавляем активный класс к нажатой
+          this.classList.add('active');
+          
+          const continent = this.dataset.continent;
+          
+          // Инициализируем карту при первом клике
+          initMap();
+          
+          // Запускаем подсветку континента
+          highlightContinent(continent);
+        });
+      });
+      
+      // Инициализируем карту заранее, если секция видна (опционально)
+      // initMap();
+    });
+
+    // Плавная прокрутка для якорных ссылок (дополнительная поддержка)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
