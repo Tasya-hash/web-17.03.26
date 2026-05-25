@@ -31,7 +31,7 @@
       display: block;
     }
 
-    /* ---------- Шапка и навигация ---------- */
+    /* Шапка и навигация */
 
     header {
       position: fixed;
@@ -86,7 +86,7 @@
       width: 100%;
     }
 
-    /* ---------- Общие стили секций ---------- */
+    /* Общие стили секций */
 
     section {
       min-height: 100vh;
@@ -111,7 +111,7 @@
       margin-bottom: 16px;
     }
 
-    /* ---------- Кнопки и hover-анимации ---------- */
+    /* Кнопки и hover-анимации */
 
     .btn {
       display: inline-flex;
@@ -148,7 +148,7 @@
       box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
     }
 
-    /* ---------- Hero с background-image ---------- */
+    /* Hero с background-image */
 
     #hero {
       position: relative;
@@ -181,7 +181,7 @@
       max-width: 520px;
     }
 
-    /* ---------- О нас ---------- */
+    /* О нас */
 
     #about .section-inner {
       display: grid;
@@ -203,7 +203,7 @@
       box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
     }
 
-    /* ---------- Лучшее предложение ---------- */
+    /* Лучшее предложение */
 
     #offers .offer-wrapper {
       display: grid;
@@ -237,7 +237,7 @@
       color: #0b6efb;
     }
 
-    /* ---------- Популярные направления ---------- */
+    /* Популярные направления */
 
     #destinations .cards-grid {
       display: grid;
@@ -262,7 +262,7 @@
       color: #666;
     }
 
-    /* ---------- Наши туры ---------- */
+    /* Наши туры */
 
     #tours .cards-grid {
       display: grid;
@@ -284,7 +284,7 @@
       margin-bottom: 12px;
     }
 
-    /* ---------- Отзывы ---------- */
+    /* Отзывы */
 
     #reviews .cards-grid {
       display: grid;
@@ -326,7 +326,7 @@
       color: #555;
     }
 
-    /* ---------- Наши моменты (карусель) ---------- */
+    /* Наши моменты (карусель) */
 
     #moments .carousel-container {
       position: relative;
@@ -382,7 +382,7 @@
       transform: scale(1.05);
     }
 
-    /* ---------- FAQ ---------- */
+    /* FAQ */
 
     #faq details {
       background: #fff;
@@ -414,7 +414,7 @@
       color: #555;
     }
 
-    /* ---------- Контакты ---------- */
+    /* Контакты */
 
     #contacts .section-inner {
       display: grid;
@@ -468,7 +468,7 @@
       transform: translateY(-1px);
     }
 
-    /* ---------- НОВАЯ СЕКЦИЯ: Интерактивная карта ---------- */
+    /* НОВОЕ!!! НЕ ТЕРЯТЬ: Интерактивная карта */
 
     #map-section {
       background: #fff;
@@ -535,7 +535,7 @@
       padding: 20px;
     }
 
-    /* ---------- Адаптив ---------- */
+    /* Адаптив */
 
     @media (max-width: 900px) {
       #about .section-inner,
@@ -755,7 +755,7 @@
   </div>
 </section>
 
-  <!-- Отзывы наших клиентов (исправлен синтаксис) -->
+  <!-- Отзывы наших клиентов -->
   <section id="reviews">
   <div class="section-inner">
     <h2>Отзывы наших клиентов</h2>
@@ -828,17 +828,17 @@
     </div>
   </section>
 
-  <!-- 🌍 НОВАЯ СЕКЦИЯ: Интерактивная карта мира -->
+  <!-- НОВОЕ ОПЯТЬ!!!: Интерактивная карта мира -->
   <section id="map-section">
     <div class="section-inner">
       <h2>Исследуйте мир</h2>
       <p>Выберите континент, чтобы увидеть популярные направления и начать планировать своё путешествие</p>
       
       <div class="continent-buttons">
-        <button class="continent-btn" data-continent="Europe">🇪🇺 Европа</button>
-        <button class="continent-btn" data-continent="Asia">🌏 Азия</button>
-        <button class="continent-btn" data-continent="Africa">🌍 Африка</button>
-        <button class="continent-btn" data-continent="America">🌎 Америка</button>
+        <button class="continent-btn" data-continent="Europe">Европа</button>
+        <button class="continent-btn" data-continent="Asia">Азия</button>
+        <button class="continent-btn" data-continent="Africa">Африка</button>
+        <button class="continent-btn" data-continent="America">Америка</button>
       </div>
       
       <div id="map"></div>
@@ -897,7 +897,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <script>
-    // ========== Карусель для "Наши моменты" ==========
+    // Карусель для "Наши моменты"
     const track = document.getElementById("carouselTrack");
     const slides = Array.from(track.children);
     const prevBtn = document.getElementById("prevBtn");
@@ -925,7 +925,7 @@
     window.addEventListener("resize", updateCarousel);
     setInterval(showNext, 5000);
 
-    // ========== 🌍 ЛОГИКА ИНТЕРАКТИВНОЙ КАРТЫ ==========
+    // НОВОЕ!!! ЛОГИКА ИНТЕРАКТИВНОЙ КАРТЫ
     
     // Запасные координаты центров континентов (если API недоступен)
     const fallbackCoords = {
@@ -968,12 +968,12 @@
       const statusEl = document.getElementById('mapStatus');
       statusEl.textContent = 'Загрузка данных...';
       
-      // Деактивируем кнопки на время запроса
+      // Деактивация кнопки на время запроса
       document.querySelectorAll('.continent-btn').forEach(btn => {
         btn.disabled = true;
       });
 
-      // Формируем URL для запроса к Nominatim API
+      // Формирование URL для запроса к Nominatim API
       const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(continentName)}&format=json&limit=1`;
 
       fetch(url)
@@ -988,7 +988,7 @@
             const lat = parseFloat(data[0].lat);
             const lon = parseFloat(data[0].lon);
             drawCircle(lat, lon, continentName);
-            statusEl.textContent = `📍 Центр ${getContinentName(continentName)}: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+            statusEl.textContent = `Центр ${getContinentName(continentName)}: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
           } else {
             throw new Error('No coordinates found');
           }
@@ -998,13 +998,13 @@
           const coords = fallbackCoords[continentName];
           if (coords) {
             drawCircle(coords[0], coords[1], continentName);
-            statusEl.textContent = `⚠️ Использованы запасные координаты для ${getContinentName(continentName)}`;
+            statusEl.textContent = `Использованы запасные координаты для ${getContinentName(continentName)}`;
           } else {
-            statusEl.textContent = '❌ Не удалось загрузить данные';
+            statusEl.textContent = 'Не удалось загрузить данные';
           }
         })
         .finally(() => {
-          // Возвращаем активность кнопкам
+          // Возвращение активность кнопкам
           document.querySelectorAll('.continent-btn').forEach(btn => {
             btn.disabled = false;
           });
@@ -1013,14 +1013,14 @@
 
     // Рисование окружности на карте
     function drawCircle(lat, lon, continentName) {
-      // Удаляем предыдущую окружность, если есть
+      // Удаление предыдущей окружности, если есть
       if (currentCircle) {
         map.removeLayer(currentCircle);
       }
 
       const radius = continentRadius[continentName] || 2000000;
       
-      // Рисуем новую окружность
+      // Рисует новую окружность
       currentCircle = L.circle([lat, lon], {
         color: '#0b6efb',
         fillColor: '#0b6efb',
@@ -1029,12 +1029,12 @@
         weight: 2
       }).addTo(map);
 
-      // Центрируем карту на выбранном континенте
+      // Центрирует карту на выбранном континенте
       map.flyTo([lat, lon], continentName === 'America' ? 3 : 4, {
         duration: 1.5
       });
 
-      // Добавляем маркер в центр
+      // Добавляет маркер в центр
       L.marker([lat, lon])
         .addTo(map)
         .bindPopup(`<strong>${getContinentName(continentName)}</strong><br>Нажмите для поиска туров`)
@@ -1058,26 +1058,26 @@
       
       continentButtons.forEach(button => {
         button.addEventListener('click', function() {
-          // Убираем активный класс у всех кнопок
+          // Убирает активный класс у всех кнопок
           continentButtons.forEach(btn => btn.classList.remove('active'));
-          // Добавляем активный класс к нажатой
+          // Добавляет активный класс к нажатой
           this.classList.add('active');
           
           const continent = this.dataset.continent;
           
-          // Инициализируем карту при первом клике
+          // Инициализирует карту при первом клике
           initMap();
           
-          // Запускаем подсветку континента
+          // Запускает подсветку континента
           highlightContinent(continent);
         });
       });
       
-      // Инициализируем карту заранее, если секция видна (опционально)
+      // Инициализирует карту заранее, если секция видна
       // initMap();
     });
 
-    // Плавная прокрутка для якорных ссылок (дополнительная поддержка)
+    // Плавная прокрутка для якорных ссылок
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
