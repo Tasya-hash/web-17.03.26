@@ -1,0 +1,572 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-color: #008080; 
+            --text-primary: #333;
+            --text-light: #f5f5f5;
+            --accent-green: #4CAF50;
+            --accent-red: #8B0000;
+            --item-bg: #e0e0e0;
+            --item-bg-hover: #d0d0d0;
+            --done-bg: #8c8c8c;
+            --date-color: #a9a9a9;
+            --border-color: #666;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        .header {
+            background-color: var(--bg-color);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Lobster', cursive;
+            font-size: 42px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 0;
+        }
+
+        .panel {
+            display: flex;
+            padding: 20px;
+            gap: 10px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .panel input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .panel input::placeholder {
+            color: #999;
+        }
+
+        .panel button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .panel .create {
+            background-color: #e0e0e0;
+            color: var(--text-primary);
+        }
+
+        .panel .create:hover {
+            background-color: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .panel .clear {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        .panel .clear:hover {
+            background-color: #a00000;
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .filter-link {
+            cursor: pointer;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-link:hover {
+            color: #008080;
+        }
+
+        .filter-link.active {
+            font-weight: bold;
+            color: #008080;
+        }
+
+        .sort-btn {
+            padding: 6px 12px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .sort-btn:hover {
+            background-color: #d0d0d0;
+            transform: translateY(-1px);
+        }
+
+        .list-container {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+            padding: 10px;
+            min-height: 200px;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--item-bg);
+            margin-bottom: 2px;
+            padding: 12px 15px;
+            transition: background-color 0.3s;
+        }
+
+        .todo-item:hover {
+            background-color: var(--item-bg-hover);
+        }
+
+        .todo-item.completed {
+            background-color: var(--done-bg);
+            color: white;
+        }
+
+        .todo-item.completed:hover {
+            background-color: #7a7a7a;
+        }
+
+        .todo-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .todo-content input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .text-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .todo-text {
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+        }
+
+        .todo-date {
+            font-size: 12px;
+            color: var(--date-color);
+            margin-top: 2px;
+        }
+
+        .todo-item.completed .todo-date {
+            color: #ccc;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #ff4444;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        .remove-btn:hover {
+            background-color: #ff4444;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            font-size: 18px;
+            font-style: italic;
+        }
+
+        .footer {
+            background-color: var(--bg-color);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 500px) {
+            .panel {
+                flex-wrap: wrap;
+            }
+            
+            .panel input {
+                flex: 1 1 100%;
+                order: 1;
+            }
+            
+            .panel .create {
+                flex: 1;
+                order: 2;
+            }
+            
+            .panel .clear {
+                flex: 1;
+                order: 3;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-links {
+                justify-content: center;
+            }
+
+            .sort-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <h1>Список дел</h1>
+        </header>
+
+        <div class="panel">
+            <input type="text" id="newTodoInput" placeholder="Новый элемент списка">
+            <button type="submit" class="create" id="createBtn">Создать</button>
+            <button type="reset" class="clear" id="clearAllBtn">Очистить всё</button>
+        </div>
+
+        <div class="controls">
+            <div class="filter-links">
+                <a class="filter-link active" data-filter="all">Все</a>
+                <a class="filter-link" data-filter="completed">Сделанные</a>
+                <a class="filter-link" data-filter="active">Не сделанные</a>
+            </div>
+            <button class="sort-btn" id="sortBtn">Сортировать по имени</button>
+        </div>
+
+        <div class="list-container">
+            <ul class="todo-list" id="todoList"></ul>
+            <div class="empty-message" id="emptyMessage">Не найдено ни одного дела</div>
+        </div>
+
+        <footer class="footer">
+            <hr>
+            <div>Copyright ©</div>
+        </footer>
+    </div>
+
+    <script>
+        // Хранилище элементов
+        class TodoStore {
+            constructor() {
+                this.todos = [];
+                this.nextId = 4;
+                this.loadFromStorage();
+            }
+
+            loadFromStorage() {
+                const saved = localStorage.getItem('todos');
+                if (saved) {
+                    this.todos = JSON.parse(saved);
+                    this.nextId = Math.max(...this.todos.map(t => t.id), 0) + 1;
+                } else {
+                    // Начальные данные
+                    this.todos = [
+                        { id: 1, text: 'Почесать кошку', date: '24.08.2023', completed: false },
+                        { id: 2, text: 'Полить картошку', date: '04.05.2022', completed: false },
+                        { id: 3, text: 'Сложить в лукошко', date: '19.05.2022', completed: false }
+                    ];
+                }
+            }
+
+            saveToStorage() {
+                localStorage.setItem('todos', JSON.stringify(this.todos));
+            }
+
+            addTodo(text) {
+                const newTodo = {
+                    id: this.nextId++,
+                    text: text,
+                    date: this.getCurrentDate(),
+                    completed: false
+                };
+                this.todos.push(newTodo);
+                this.saveToStorage();
+                return newTodo;
+            }
+
+            deleteTodo(id) {
+                this.todos = this.todos.filter(todo => todo.id !== id);
+                this.saveToStorage();
+            }
+
+            deleteAllTodos() {
+                this.todos = [];
+                this.saveToStorage();
+            }
+
+            toggleTodo(id) {
+                const todo = this.todos.find(t => t.id === id);
+                if (todo) {
+                    todo.completed = !todo.completed;
+                    this.saveToStorage();
+                }
+            }
+
+            getCurrentDate() {
+                const now = new Date();
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+                return `${day}.${month}.${year}`;
+            }
+
+            getTodos() {
+                return [...this.todos];
+            }
+        }
+
+        // Отображение списка
+        class TodoView {
+            constructor(store) {
+                this.store = store;
+                this.currentFilter = 'all';
+                this.currentSort = false;
+                this.todoListElement = document.getElementById('todoList');
+                this.emptyMessageElement = document.getElementById('emptyMessage');
+                
+                this.bindEvents();
+                this.render();
+            }
+
+            bindEvents() {
+                // Создание нового дела
+                document.getElementById('createBtn').addEventListener('click', () => {
+                    const input = document.getElementById('newTodoInput');
+                    const text = input.value.trim();
+                    if (text) {
+                        this.store.addTodo(text);
+                        input.value = '';
+                        this.render();
+                    } else {
+                        alert('Пожалуйста, введите текст дела');
+                    }
+                });
+
+                // Добавление по Enter
+                document.getElementById('newTodoInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        document.getElementById('createBtn').click();
+                    }
+                });
+
+                // Очистка всех дел
+                document.getElementById('clearAllBtn').addEventListener('click', () => {
+                    if (confirm('Вы уверены, что хотите удалить все дела?')) {
+                        this.store.deleteAllTodos();
+                        this.render();
+                    }
+                });
+
+                // Фильтрация
+                document.querySelectorAll('.filter-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-link').forEach(l => l.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.render();
+                    });
+                });
+
+                // Сортировка
+                document.getElementById('sortBtn').addEventListener('click', () => {
+                    this.currentSort = !this.currentSort;
+                    this.render();
+                });
+            }
+
+            getFilteredTodos() {
+                let todos = this.store.getTodos();
+                
+                // Фильтрация
+                if (this.currentFilter === 'completed') {
+                    todos = todos.filter(todo => todo.completed);
+                } else if (this.currentFilter === 'active') {
+                    todos = todos.filter(todo => !todo.completed);
+                }
+                
+                // Сортировка
+                if (this.currentSort) {
+                    todos.sort((a, b) => a.text.localeCompare(b.text));
+                }
+                
+                return todos;
+            }
+
+            render() {
+                const todos = this.getFilteredTodos();
+                
+                if (todos.length === 0) {
+                    this.todoListElement.style.display = 'none';
+                    this.emptyMessageElement.style.display = 'block';
+                    return;
+                }
+                
+                this.todoListElement.style.display = 'block';
+                this.emptyMessageElement.style.display = 'none';
+                
+                this.todoListElement.innerHTML = '';
+                
+                todos.forEach(todo => {
+                    const li = this.createTodoElement(todo);
+                    this.todoListElement.appendChild(li);
+                });
+            }
+
+            createTodoElement(todo) {
+                const li = document.createElement('li');
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                li.dataset.id = todo.id;
+                
+                li.innerHTML = `
+                    <div class="todo-content">
+                        <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                        <div class="text-wrapper">
+                            <span class="todo-text">${this.escapeHtml(todo.text)}</span>
+                            <span class="todo-date">от ${todo.date}</span>
+                        </div>
+                    </div>
+                    <button class="remove-btn">✖</button>
+                `;
+                
+                // Обработчик чекбокса
+                const checkbox = li.querySelector('.todo-checkbox');
+                checkbox.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    this.store.toggleTodo(todo.id);
+                    this.render();
+                });
+                
+                // Обработчик удаления
+                const removeBtn = li.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Удалить дело "${todo.text}"?`)) {
+                        this.store.deleteTodo(todo.id);
+                        this.render();
+                    }
+                });
+                
+                return li;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Инициализация приложения
+        const store = new TodoStore();
+        const view = new TodoView(store);
+    </script>
+</body>
+</html>
